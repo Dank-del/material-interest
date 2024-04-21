@@ -1,114 +1,39 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm } from '@tanstack/react-form'
 import z from 'zod';
 import { zodValidator } from '@tanstack/zod-form-adapter'
 import Icon from '@mdi/react';
 import { mdiClockTimeEightOutline, mdiCurrencyRupee, mdiPercent } from '@mdi/js';
-import { useEffect, useState } from 'react';
-import { calculateInterestOnDeposit, MonthlySummary, YearlySummary } from '../lib/calculate';
+import { useState } from 'react';
+import { calculateInterestOnCreditCard, CreditCardSummary } from '../lib/calculate';
 import { FieldInfo } from '../lib/helpers';
-
 
 type Data = {
     rate: number,
     time: number,
     principal: number
-    interest: number
-    summaryData: {
-        monthly: MonthlySummary[],
-        yearly: YearlySummary[]
-    }
+    interest: number,
+    summaryData: CreditCardSummary[]
 }
 
-interface Props {
-    monthlySummaries: MonthlySummary[];
-    yearlySummaries: YearlySummary[];
-}
-
-const InterestTable: React.FC<Props> = ({ monthlySummaries, yearlySummaries }) => {
-    const [activeTab, setActiveTab] = useState(1);
-
-    useEffect(() => {
-        // Code to run when activeTab changes
-    }, [activeTab]);
-
-    const handleTabClick = (tabNumber: number) => {
-        setActiveTab(tabNumber);
-    };
-
-    return (
-        <div>
-            <div className="tabs">
-                <a className={activeTab === 1 ? 'active' : ''} onClick={() => handleTabClick(1)}>Monthly Breakdown</a>
-                <a className={activeTab === 2 ? 'active' : ''} onClick={() => handleTabClick(2)}>Yearly Breakdown</a>
-            </div>
-            <div className={`page padding right ${activeTab === 1 ? 'active' : ''}`}>
-                <table className="stripes text-xs md:text-xl">
-                    <thead>
-                        <tr>
-                            <th>Month</th>
-                            <th>Interest</th>
-                            <th>Accrued Interest</th>
-                            <th>Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {monthlySummaries.map(summary => (
-                            <tr key={summary.month}>
-                                <td>{summary.month}</td>
-                                <td>₹{summary.interest.toFixed(2)}</td>
-                                <td>₹{summary.accruedInterest.toFixed(2)}</td>
-                                <td>₹{summary.balance.toFixed(2)}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-            <div className={`page padding left ${activeTab === 2 ? 'active' : ''}`}>
-                <table className="stripes">
-                    <thead>
-                        <tr>
-                            <th>Year</th>
-                            <th>Interest</th>
-                            <th>Accrued Interest</th>
-                            <th>Balance</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {yearlySummaries.map(summary => (
-                            <tr key={summary.year}>
-                                <td>{summary.year}</td>
-                                <td>₹{summary.interest.toFixed(2)}</td>
-                                <td>₹{summary.accruedInterest.toFixed(2)}</td>
-                                <td>₹{summary.balance.toFixed(2)}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
-};
-
-
-
-export default function DepositForm() {
+export default function CreditCardForm() {
     const [result, setResult] = useState<Data>();
 
     const form = useForm({
         defaultValues: {
-            principal: 0,
+            balance: 0,
             rate: 0,
-            years: 0
+            months: 0
         },
         onSubmit: async ({ value }) => {
             // Do something with form data
-            const data = calculateInterestOnDeposit(value.principal, value.rate, value.years)
+            const data = calculateInterestOnCreditCard(value.balance, value.rate, value.months)
             console.log(data)
             setResult({
-                principal: value.principal,
+                principal: value.balance,
                 rate: value.rate,
-                time: value.years,
-                interest: data.yearly[data.yearly.length - 1].interest,
+                time: value.months,
+                interest: data[data.length - 1].interest,
                 summaryData: data
             })
         },
@@ -125,11 +50,11 @@ export default function DepositForm() {
         >
             <div>
                 <form.Field
-                    name="principal"
+                    name="balance"
                     validators={{
                         onChange: z
                             .number()
-                            .min(3, 'Principal must be at least 3'),
+                            .min(3, 'Balance must be at least 3'),
                         onChangeAsyncDebounceMs: 500,
                     }}
                     children={(field) => (
@@ -141,7 +66,7 @@ export default function DepositForm() {
                                 onBlur={field.handleBlur}
                                 onChange={(e) => field.handleChange(parseFloat(e.target.value))}
                             />
-                            <label>Principal</label>
+                            <label>Balance</label>
                             <Icon path={mdiCurrencyRupee} />
                             <FieldInfo field={field} />
                         </div>
@@ -171,11 +96,11 @@ export default function DepositForm() {
                     )}
                 />
                 <form.Field
-                    name="years"
+                    name="months"
                     validators={{
                         onChange: z
                             .number()
-                            .min(1, 'Time in years must be at least 1'),
+                            .min(1, 'Time in months must be at least 1'),
                         onChangeAsyncDebounceMs: 500,
                     }}
                     children={(field) => (
@@ -187,7 +112,7 @@ export default function DepositForm() {
                                 onBlur={field.handleBlur}
                                 onChange={(e) => field.handleChange(parseFloat(e.target.value))}
                             />
-                            <label>Time (years)</label>
+                            <label>Time (months)</label>
                             <Icon path={mdiClockTimeEightOutline} />
                             <FieldInfo field={field} />
                         </div>
@@ -209,8 +134,6 @@ export default function DepositForm() {
                 </h5>
                 <div>for a principal of {result.principal} with a rate of {result.rate}% over {result.time} years</div>
             </div>}
-
-            {result && <InterestTable monthlySummaries={result.summaryData.monthly} yearlySummaries={result.summaryData.yearly} />}
         </form>
     )
 }
