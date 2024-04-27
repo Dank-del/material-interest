@@ -42,7 +42,7 @@ const InterestTable: React.FC<Props> = ({ monthlySummaries, yearlySummaries }) =
                 <a className={activeTab === 2 ? 'active' : ''} onClick={() => handleTabClick(2)}>Yearly Breakdown</a>
             </div>
             <div className={`page padding right ${activeTab === 1 ? 'active' : ''}`}>
-                <table className="stripes text-xs md:text-xl">
+                <table className="text-xs stripes md:text-xl">
                     <thead>
                         <tr>
                             <th>Month</th>
@@ -133,7 +133,7 @@ export default function DepositForm() {
                         onChangeAsyncDebounceMs: 500,
                     }}
                     children={(field) => (
-                        <div className='field label suffix border round'>
+                        <div className='fill field label suffix round'>
                             <input
                                 type='number'
                                 name={field.name}
@@ -156,7 +156,7 @@ export default function DepositForm() {
                         onChangeAsyncDebounceMs: 500,
                     }}
                     children={(field) => (
-                        <div className='field label suffix border round'>
+                        <div className='fill field label suffix round'>
                             <input
                                 type='number'
                                 name={field.name}
@@ -179,7 +179,7 @@ export default function DepositForm() {
                         onChangeAsyncDebounceMs: 500,
                     }}
                     children={(field) => (
-                        <div className='field label suffix border round'>
+                        <div className='fill field label suffix round'>
                             <input
                                 type='number'
                                 name={field.name}
@@ -202,7 +202,7 @@ export default function DepositForm() {
                     </button>
                 )}
             />
-            {result && <div className="mt-4 p-5 primary flex justify-center flex-col rounded-xl">
+            {result && <div className="flex flex-col justify-center p-5 mt-4 primary rounded-xl">
                 <h5>
                     <Icon path={mdiCurrencyRupee} size={3} />
                     <p className='text-5xl'>{result.principal + result.interest}</p>

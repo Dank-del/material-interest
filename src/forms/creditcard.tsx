@@ -58,7 +58,7 @@ export default function CreditCardForm() {
                         onChangeAsyncDebounceMs: 500,
                     }}
                     children={(field) => (
-                        <div className='field label suffix border round'>
+                        <div className='field label suffix fill round'>
                             <input
                                 type='number'
                                 name={field.name}
@@ -81,7 +81,7 @@ export default function CreditCardForm() {
                         onChangeAsyncDebounceMs: 500,
                     }}
                     children={(field) => (
-                        <div className='field label suffix border round'>
+                        <div className='field label suffix fill round'>
                             <input
                                 type='number'
                                 name={field.name}
@@ -104,7 +104,7 @@ export default function CreditCardForm() {
                         onChangeAsyncDebounceMs: 500,
                     }}
                     children={(field) => (
-                        <div className='field label suffix border round'>
+                        <div className='fill field label suffix round'>
                             <input
                                 type='number'
                                 name={field.name}
@@ -127,7 +127,7 @@ export default function CreditCardForm() {
                     </button>
                 )}
             />
-            {result && <div className="mt-4 p-5 primary flex justify-center flex-col rounded-xl">
+            {result && <div className="flex flex-col justify-center p-5 mt-4 primary rounded-xl">
                 <h5>
                     <Icon path={mdiCurrencyRupee} size={3} />
                     <p className='text-5xl'>{result.principal + result.interest}</p>
